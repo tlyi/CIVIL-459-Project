@@ -366,7 +366,7 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
             preprocess=self._eval_preprocess(),
             annotation_filter=self.eval_annotation_filter,
             min_kp_anns=self.min_kp_anns if self.eval_annotation_filter else 0,
-            category_ids=[1] if self.eval_annotation_filter else [],
+            category_ids=[0,1,2,3,4,5,6,7,8,9,10,11,12,22,20,21] if self.eval_annotation_filter else [],
         )
         return torch.utils.data.DataLoader(
             eval_data, batch_size=self.batch_size, shuffle=False,
