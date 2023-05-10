@@ -57,9 +57,11 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
     eval_orientation_invariant = 0.0
     eval_extended_scale = False
 
-    # lane-specific configuration
+    # car-specific configuration
+    ## see later what these configuration do
+
     hflip = None
-    weights: Optional[List[float]] = None 
+    weights: Optional[List[float]] = None # what are these weights
     lane_categories =  [ 
                         'unkown',             # 0
                         'white-dash',         # 1
@@ -86,12 +88,12 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
     def __init__(self):
         super().__init__()
 
-        assert self.lane_keypoints is not None
-        assert self.lane_sigmas is not None
-        assert self.lane_skeleton is not None
+        assert self.car_keypoints is not None
+        assert self.car_sigmas is not None
+        assert self.car_skeleton is not None
 
         if self.weights is not None:
-            caf_weights = [] 
+            caf_weights = [] # what is this weight again
             for bone1, bone2 in self.lane_skeleton:  # pylint: disable=not-an-iterable
                 caf_weights.append(max(self.weights[bone1 - 1],
                                        self.weights[bone2 - 1])) 
@@ -161,7 +163,10 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
         group.add_argument('--openlane-bmin',
                            default=cls.b_min, type=int,
                            help='b minimum in pixels')
-      
+        #group.add_argument('--apollo-apply-local-centrality-weights',
+                          # dest='apollo_apply_local_centrality',
+                          # default=False, action='store_true',
+                          # help='Weigh the CIF and CAF head during training.')
 
         # evaluation
         assert cls.eval_annotation_filter
@@ -366,7 +371,7 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
             preprocess=self._eval_preprocess(),
             annotation_filter=self.eval_annotation_filter,
             min_kp_anns=self.min_kp_anns if self.eval_annotation_filter else 0,
-            category_ids=[1] if self.eval_annotation_filter else [],
+            category_ids=[0,1,2,3,4,5,6,7,8,9,10,11,12,22,20,21] if self.eval_annotation_filter else [],
         )
         return torch.utils.data.DataLoader(
             eval_data, batch_size=self.batch_size, shuffle=False,
