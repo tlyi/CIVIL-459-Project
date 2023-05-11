@@ -1,1 +1,0 @@
- cp -n -r {images_training_2/.,images_training_3/.,images_training_4/.,images_training_5/.,images_training_6/.,images_training_7/.,images_training_8/.,images_training_9/.,images_training_10/.,images_training_11/.,images_training_12/.,images_training_13/.,images_training_14/.,images_training_15/.} ~/civil-459-project/images/training
