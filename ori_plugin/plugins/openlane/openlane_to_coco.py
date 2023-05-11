@@ -1,5 +1,5 @@
 """
-Convert txt files of openlane into json file with COCO format
+Convert openlane json files to one single json file with COCO format
 """
 
 import glob
@@ -20,14 +20,15 @@ except ModuleNotFoundError as err:
         raise err
     plt = None
 
-from constants import LANE_KEYPOINTS_24, LANE_SKELETON_24
+from constants import LANE_KEYPOINTS_24, LANE_SKELETON_24, IMAGE_WIDTH, IMAGE_HEIGHT
 
 
 def cli():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    #TODO: Alter the OpenLane dataset to follow format
+    #TODO: Alter the OpenLane dataset to follow the saame hierarchy as shown on their GitHub page 
+    # (https://github.com/OpenDriveLab/OpenLane/blob/main/data/README.md)
     parser.add_argument('--dir_data', default='../../../annotations',
                         help='dataset annotations directory')
     parser.add_argument('--dir_images', default='../../../images',
@@ -49,14 +50,14 @@ class OpenLaneToCoco:
 
     sample = False
     single_sample = False
-    split_images = False
-    histogram = False
 
     def __init__(self, dir_dataset, dir_images, dir_out):
         """
-        :param dir_dataset: Original dataset directory
+        :param dir_dataset: Original dataset directory containing json annotations
+        :param dir_images: Original dataset directory containing images
         :param dir_out: Processed dataset directory
         """
+
         assert os.path.isdir(dir_dataset), 'dataset directory not found'
         self.dir_dataset = dir_dataset
         self.dir_images = dir_images
@@ -87,7 +88,9 @@ class OpenLaneToCoco:
         }
 
     def process(self):
-        """Iterate all json annotations, process into a single json file compatible with coco format"""
+        """
+        Iterate all json annotations, process into a single json file compatible with coco format
+        """
 
         for phase, ann_paths in self.splits.items(): #Iterate through training and validation (phases) annotations 
             #keep count?
@@ -107,7 +110,9 @@ class OpenLaneToCoco:
                 f = open(ann_path) #o
                 openlane_data = json.load(f) 
                 
-                """Update image field in json file"""
+                """
+                Update image field in json file
+                """
                 relative_file_path = openlane_data['file_path']
                 file_path = os.path.join(self.dir_images, relative_file_path)
                 img_name = os.path.splitext(file_path)[0]   # Returns tuple (file_name, ext)
@@ -117,47 +122,52 @@ class OpenLaneToCoco:
                 if not os.path.exists(file_path):
                     continue
 
-                img = Image.open(file_path)
-                img_width, img_height = img.size
+                #Should not be necessary to open each image file to determine size; images in dataset seem to be standardised
+                # img = Image.open(file_path)
+                # img_width, img_height = img.size
+                
                 dict_ann = {
                     'coco_url': "unknown",
                     'file_name': img_name,
                     'id': img_id,
                     'license': 1,
                     'date_captured': "unknown",
-                    'width': img_width,
-                    'height': img_height}
+                    'width': IMAGE_WIDTH,
+                    'height': IMAGE_HEIGHT}
                 self.json_file_24["images"].append(dict_ann)
 
         
                 #extract keypoints, visibility, category, and load into COCO annotations field
                 lane_lines = openlane_data['lane_lines']
 
-                #create coco annotation dict for each lane in image
+
+                """
+                Update annotation field in json file for each lane in image
+                """    
                 for lane in lane_lines:
                     category_id = lane['category']
-                    num_kp = len(lane['uv'])
                     kp_coords = np.array(lane['uv']) #take the image coords, not the camera coords
 
-                    
+                    #note kp_coords format is [[u],[v]]
+                    num_kp = len(kp_coords[0])
+
                     #TODO: figure out why number of points in visibility != len(uv) but = len(xyz).
                     #For now, assume all points have visibility = 1
                     # kp_visibility = lane['visibility'] 
                    
                     kps = []
                     #keypoints need to be in [xi, yi, vi format]
-                    for u, v in kp_coords:
-                        kps.extend(u, v, 1) #Note: visibility might not be correct
+                    for u, v in zip(kp_coords[0], kp_coords[1]):
+                        kps.extend([u, v, 1]) #Note: visibility might not be correct
 
-                    #define bounding box based on area derived from 2d coords
-                      
-                    box_tight = [np.min(kp_coords[:, 0]), np.min(kp_coords[:, 1]),
-                                np.max(kp_coords[:, 0]), np.max(kp_coords[:, 1])]
+                    #define bounding box based on area derived from 2d coords     
+                    box_tight = [np.min(kp_coords[0]), np.min(kp_coords[1]),
+                                np.max(kp_coords[0]), np.max(kp_coords[1])]
                     w, h = box_tight[2] - box_tight[0], box_tight[3] - box_tight[1]
                     x_o = max(box_tight[0] - 0.1 * w, 0)
                     y_o = max(box_tight[1] - 0.1 * h, 0)
-                    x_i = min(box_tight[0] + 1.1 * w, img_width)
-                    y_i = min(box_tight[1] + 1.1 * h, img_height)
+                    x_i = min(box_tight[0] + 1.1 * w, IMAGE_WIDTH)
+                    y_i = min(box_tight[1] + 1.1 * h, IMAGE_HEIGHT)
                     box = [int(x_o), int(y_o), int(x_i - x_o), int(y_i - y_o)]  # (x, y, w, h)
     
                     coco_ann = {
@@ -194,7 +204,7 @@ class OpenLaneToCoco:
 
     def initiate_json(self):
         """
-        Initiate Json for training and val phase for the 24 kp version
+        Initiate Json for training and val phase
         """
         
         lane_kps = LANE_KEYPOINTS_24
@@ -203,11 +213,12 @@ class OpenLaneToCoco:
                                   date_created=time.strftime("%a, %d %b %Y %H:%M:%S +0000",
                                                              time.localtime()),
                                   description=("Conversion of openlane dataset into MS-COCO"
-                                               " format with {n_kp} keypoints"))
+                                               " format with 2D keypoints"))
         self.json_file_24["categories"] = [dict(name='lane',
                                          id=1,
+                                         skeleton = LANE_SKELETON_24,
                                          supercategory='lane',
-                                         keypoints=lane_kps)]
+                                         keypoints=[])]
         self.json_file_24["images"] = []
         self.json_file_24["annotations"] = []
 

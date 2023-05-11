@@ -11,6 +11,10 @@ except ImportError:
 import openpifpaf
 
 
+#Images in openlane dataset seem to have standard format
+IMAGE_WIDTH = 1920
+IMAGE_HEIGHT = 1280
+
 LANE_KEYPOINTS_24 = [
     '1',       # 1 the nearest
     '2',       # 2 equally further

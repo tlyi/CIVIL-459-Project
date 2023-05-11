@@ -1,2 +1,6 @@
+.gitignore
+
 annotations/
 images/
+data_openlane/
+*.pyc
