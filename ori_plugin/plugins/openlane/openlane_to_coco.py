@@ -20,7 +20,7 @@ except ModuleNotFoundError as err:
         raise err
     plt = None
 
-from constants import LANE_KEYPOINTS_24, LANE_SKELETON_24, IMAGE_WIDTH, IMAGE_HEIGHT
+from .constants import LANE_KEYPOINTS_24, LANE_SKELETON_24, IMAGE_WIDTH, IMAGE_HEIGHT
 
 
 def cli():

@@ -37,8 +37,8 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
     train_annotations = 'data-openlane/annotations/openlane_keypoints_24_train.json'  # merge multiple json files,to do: openlane_to_coco.py 
     val_annotations = 'data-openlane/annotations/openlane_keypoints_24_val.json' 
     eval_annotations = val_annotations 
-    train_image_dir = 'data-openlane/images/train/' # change to dataset dir
-    val_image_dir = 'data-openlane/images/val/' 
+    train_image_dir = '/work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/training/' # change to dataset dir
+    val_image_dir = '/work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/validation/' 
     eval_image_dir = val_image_dir
 
     n_images = None
