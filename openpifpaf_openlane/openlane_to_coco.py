@@ -2,15 +2,12 @@
 Convert openlane json files to one single json file with COCO format
 """
 
-import glob
 import os
 import time
-from shutil import copyfile
 import json
 import argparse
 
 import numpy as np
-from PIL import Image
 
 # Packages for data processing, crowd annotations and histograms
 try:
@@ -29,11 +26,11 @@ def cli():
 
     #TODO: Alter the OpenLane dataset to follow the saame hierarchy as shown on their GitHub page 
     # (https://github.com/OpenDriveLab/OpenLane/blob/main/data/README.md)
-    parser.add_argument('--dir_data', default='../../../annotations',
+    parser.add_argument('--dir_data', default='../annotations',
                         help='dataset annotations directory')
-    parser.add_argument('--dir_images', default='../../../images',
+    parser.add_argument('--dir_images', default='../images',
                         help='dataset images directory')
-    parser.add_argument('--dir_out', default='../../../data_openlane',
+    parser.add_argument('--dir_out', default='./data_openlane',
                         help='where to save annotations and files')
     parser.add_argument('--sample', action='store_true',
                         help='Whether to only process the first 50 images')
