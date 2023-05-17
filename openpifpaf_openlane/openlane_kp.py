@@ -22,7 +22,7 @@ import openpifpaf.transforms
 
 from .constants import get_constants #, training_weights_local_centrality
 from .metrics import MeanPixelError
-
+from .dataset import CocoDataset
 
 class OpenLaneKp(openpifpaf.datasets.DataModule):
     """
@@ -33,8 +33,8 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
     
     # test annotation json dir missing
     
-    train_annotations = 'data-openlane/annotations/openlane_keypoints_24_train.json'  # merge multiple json files,to do: openlane_to_coco.py 
-    val_annotations = 'data-openlane/annotations/openlane_keypoints_24_val.json' 
+    train_annotations = '../data-openlane/annotations/openlane_sample_training.json'  # merge multiple json files,to do: openlane_to_coco.py 
+    val_annotations = '../data-openlane/annotations/openlane_sample_validation.json' 
     eval_annotations = val_annotations 
     train_image_dir = '/work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/training/' # change to dataset dir
     val_image_dir = '/work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/validation/' 
@@ -143,7 +143,7 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
         group.add_argument('--openlane-blur',
                            default=cls.blur, type=float,
                            help='augment with blur')
-        assert cls.augmentation
+        # assert cls.augmentation
         group.add_argument('--openlane-no-augmentation',
                            dest='apollo_augmentation',
                            default=True, action='store_false',
@@ -192,7 +192,7 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
         cls.extended_scale = args.openlane_extended_scale
         cls.orientation_invariant = args.openlane_orientation_invariant
         cls.blur = args.openlane_blur
-        cls.augmentation = args.openlane_augmentation  # loaded by the dest name
+        # cls.augmentation = args.openlane_augmentation  # loaded by the dest name
         cls.rescale_images = args.openlane_rescale_images
         cls.upsample_stride = args.openlane_upsample
         cls.min_kp_anns = args.openlane_min_kp_anns

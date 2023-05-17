@@ -4,3 +4,4 @@ annotations/
 images/
 data_openlane/
 *.pyc
+*.out
