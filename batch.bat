@@ -8,12 +8,13 @@
 #SBATCH --qos dlav
 #SBATCH --account civil-459-2023
 
+
 echo STARTING
 
 python3 -m openpifpaf.train \
     --dataset openlane \
-    --openlane-train-annotations ../data_openlane/annotations/openlane_keypoints_sample_training.json \
-    --openlane-val-annotations ../data_openlane/annotations/openlane_keypoints_sample_validation.json \
+    --openlane-train-annotations data_openlane/annotations/openlane_keypoints_sample_training.json \
+    --openlane-val-annotations data_openlane/annotations/openlane_keypoints_sample_validation.json \
     --openlane-train-image-dir /work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/training \
     --openlane-val-image-dir /work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/validation \
     --openlane-square-edge=769 \
