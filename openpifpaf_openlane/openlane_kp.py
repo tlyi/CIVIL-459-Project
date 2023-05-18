@@ -257,7 +257,7 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
             image_dir=self.train_image_dir,
             ann_file=self.train_annotations,
             preprocess=self._preprocess(),
-            annotation_filter=False,
+            annotation_filter=True,
             min_kp_anns=self.min_kp_anns,
             category_ids=[0,1,2,3,4,5,6,7,8,9,10,11,12,20,21], # extending to multiple lane categories, if not working, pre-process the lanes to single category
         )
@@ -384,3 +384,4 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
             keypoint_oks_sigmas=self.lane_sigmas,
         )] 
         #, MeanPixelError()]
+
