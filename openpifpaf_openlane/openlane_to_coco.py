@@ -125,7 +125,7 @@ class OpenLaneToCoco:
                 
                 dict_ann = {
                     'coco_url': "unknown",
-                    'file_name': img_name,
+                    'file_name': img_name + '.jpg',
                     'id': img_id,
                     'license': 1,
                     'date_captured': "unknown",

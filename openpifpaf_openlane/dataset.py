@@ -115,7 +115,7 @@ class CocoDataset(torch.utils.data.Dataset):
         image_info = self.coco.loadImgs([image_id])[0]
         LOG.debug('image %s info: %s', image_id, image_info)
 
-        local_file_path = os.path.join(self.image_dir, image_info['file_name'] + '.jpg')
+        local_file_path = os.path.join(self.image_dir, image_info['file_name'])
         with open(local_file_path, 'rb') as f:
             image = Image.open(f).convert('RGB')
 
