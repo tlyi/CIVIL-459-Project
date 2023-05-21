@@ -5,3 +5,4 @@ images/
 data_openlane/
 *.pyc
 *.out
+outputs/
