@@ -96,7 +96,6 @@ class OpenLaneToCoco:
 
             #Optional arguments
             if self.sample:
-                path_len = len(ann_paths)
                 #keep 20% of the dataset, uniformly distributed
                 ann_paths = ann_paths[::5]
 
@@ -147,8 +146,15 @@ class OpenLaneToCoco:
 
                     #note kp_coords format is [[u],[v]]
                     num_kp = len(kp_coords[0])
-                    if num_kp <= 24:
+                    if num_kp < 24:
                         continue
+                    
+                    #downsample to 24 kps
+                    kp_coords = kp_coords[:,::num_kp//24]
+                    #make sure to keep only the first 24 keypoints [u,v,1] in kps
+                    kp_coords = kp_coords[:,:24]
+                    #update num_kp to the new number of keypoints, it should be 24
+                    num_kp = int(len(kp_coords[0]))
 
                     #TODO: figure out why number of points in visibility != len(uv) but = len(xyz).
                     #For now, assume all points have visibility = 1
@@ -158,14 +164,6 @@ class OpenLaneToCoco:
                     #keypoints need to be in [xi, yi, vi format]
                     for u, v in zip(kp_coords[0], kp_coords[1]):
                         kps.extend([u, v, 1]) #Note: visibility might not be correct
-                    
-                    #downsample kps to 24 keypoints using list slicing for every possible kps list
-                    kps= kps[::int(num_kp/24)]
-                    #only keep the first 24 keypoints [u,v,1] in kps
-                    kps = kps[:72]
-                    
-                    #update num_kp to the new number of keypoints, it should be 24
-                    num_kp = int(len(kps)/3)
                 
                     #define bounding box based on area derived from 2d coords     
                     box_tight = [np.min(kp_coords[0]), np.min(kp_coords[1]),
