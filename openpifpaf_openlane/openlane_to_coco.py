@@ -19,7 +19,6 @@ except ModuleNotFoundError as err:
 
 from .constants import LANE_KEYPOINTS_24, LANE_SKELETON_24, IMAGE_WIDTH, IMAGE_HEIGHT
 
-
 def cli():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -38,7 +37,6 @@ def cli():
                         help='Whether to only process the first image')
     args = parser.parse_args()
     return args
-
 
 class OpenLaneToCoco:
 
@@ -98,7 +96,10 @@ class OpenLaneToCoco:
 
             #Optional arguments
             if self.sample:
-                ann_paths = ann_paths[:50]
+                path_len = len(ann_paths)
+                #keep 20% of the dataset, uniformly distributed
+                ann_paths = ann_paths[::5]
+
             if self.single_sample:
                 ann_paths = self.splits['train'][:1]
 
@@ -137,7 +138,6 @@ class OpenLaneToCoco:
                 #extract keypoints, visibility, category, and load into COCO annotations field
                 lane_lines = openlane_data['lane_lines']
 
-
                 """
                 Update annotation field in json file for each lane in image
                 """    
@@ -147,6 +147,8 @@ class OpenLaneToCoco:
 
                     #note kp_coords format is [[u],[v]]
                     num_kp = len(kp_coords[0])
+                    if num_kp <= 24:
+                        continue
 
                     #TODO: figure out why number of points in visibility != len(uv) but = len(xyz).
                     #For now, assume all points have visibility = 1
@@ -156,7 +158,15 @@ class OpenLaneToCoco:
                     #keypoints need to be in [xi, yi, vi format]
                     for u, v in zip(kp_coords[0], kp_coords[1]):
                         kps.extend([u, v, 1]) #Note: visibility might not be correct
-
+                    
+                    #downsample kps to 24 keypoints using list slicing for every possible kps list
+                    kps= kps[::int(num_kp/24)]
+                    #only keep the first 24 keypoints [u,v,1] in kps
+                    kps = kps[:72]
+                    
+                    #update num_kp to the new number of keypoints, it should be 24
+                    num_kp = int(len(kps)/3)
+                
                     #define bounding box based on area derived from 2d coords     
                     box_tight = [np.min(kp_coords[0]), np.min(kp_coords[1]),
                                 np.max(kp_coords[0]), np.max(kp_coords[1])]
@@ -280,7 +290,6 @@ class OpenLaneToCoco:
         self.json_file_24["annotations"] = []
 
 
-
         
 def main():
     args = cli()
@@ -292,6 +301,6 @@ def main():
     apollo_coco = OpenLaneToCoco(args.dir_data, args.dir_images, args.dir_out)
     apollo_coco.process()
 
-
 if __name__ == "__main__":
     main()
+
