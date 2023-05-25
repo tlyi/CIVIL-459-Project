@@ -96,8 +96,8 @@ class OpenLaneToCoco:
 
             #Optional arguments
             if self.sample:
-                #keep 20% of the dataset, uniformly distributed
-                ann_paths = ann_paths[::5]
+                #keep 10% of the dataset, uniformly distributed
+                ann_paths = ann_paths[::10]
 
             if self.single_sample:
                 ann_paths = self.splits['train'][:1]
@@ -198,7 +198,7 @@ class OpenLaneToCoco:
     def save_json_files(self, phase):
         name = 'openlane_keypoints_'
         if self.sample:
-            name = name + 'sample_'
+            name = name + 'sample_10'
         elif self.single_sample:
             name = name + 'single_sample_'
 
