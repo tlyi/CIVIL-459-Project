@@ -96,8 +96,8 @@ class OpenLaneToCoco:
 
             #Optional arguments
             if self.sample:
-                #keep 10 of the dataset, uniformly distributed
-                ann_paths = ann_paths[:10]
+                #keep 10% of the dataset, uniformly distributed
+                ann_paths = ann_paths[::10]
 
             if self.single_sample:
                 ann_paths = self.splits['train'][:1]
@@ -147,10 +147,10 @@ class OpenLaneToCoco:
                     #note kp_coords format is [[u],[v]]
                     num_kp = len(kp_coords[0])
                 
-                    #only keep the closest (1st) point for each lane line
-                    kp_coords =kp_coords[:,0:1]
+                    #only keep the first and the last point for each lane line
+                    kp_coords = kp_coords[:,[0,-1]]
+                
             
-        
                     #update num_kp to the new number of keypoints, it should be 24
                     num_kp = int(len(kp_coords[0]))
 

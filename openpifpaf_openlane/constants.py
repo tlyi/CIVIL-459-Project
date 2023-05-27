@@ -17,19 +17,23 @@ IMAGE_HEIGHT = 1280
 
 LANE_KEYPOINTS_24 = [
     '1',       # 1 the nearest
+    '2'        # 2 the farthest
 ]
 
 LANE_SKELETON_24 = [
-  (1,1)
+  (1,2)
 ]
 
 
-LANE_SIGMAS_24 = [0.05] * len(LANE_KEYPOINTS_24)  # why dont these scales add up to 1
+LANE_SIGMAS_24 = [0.1] * len(LANE_KEYPOINTS_24)  # why dont these scales add up to 1
 
 split, error = divmod(len(LANE_KEYPOINTS_24), 4)
+'''
 LANE_SCORE_WEIGHTS_24 = [10.0] * split + [3.0] * split + \
     [1.0] * split + [0.1] * split + [0.1] * error  
-
+'''
+#LANE_SCORE_WEIGHTS_24 defined above is way too low
+LANE_SCORE_WEIGHTS_24 = [10.0, 1.0]
 assert len(LANE_SCORE_WEIGHTS_24) == len(LANE_KEYPOINTS_24)
 
 
@@ -53,6 +57,7 @@ LANE_CATEGORIES_24 = ['unkown',             # 0
 
 LANE_POSE_STRAIGHT_24 = np.array([
     [3.0, 4.0, 1.0], # 1
+    [-3.0,0.0, 1.0], # 2
 
 ])
 '''
