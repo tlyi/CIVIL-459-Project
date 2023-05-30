@@ -33,9 +33,9 @@ metrics?
 
 Results
 --------
-**24 keypoints**
+*   **24 keypoints**
 
-**2 keypoints (closest and most far away)**
+*   **2 keypoints (closest and most far away)**
 
 Conclusion
 ----------
