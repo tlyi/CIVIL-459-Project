@@ -382,6 +382,5 @@ class OpenLaneKp(openpifpaf.datasets.DataModule):
             category_ids=[0,1,2,3,4,5,6,7,8,9,10,11,12,22,20,21],
             iou_type='keypoints',
             keypoint_oks_sigmas=self.lane_sigmas,
-        )] 
-        #, MeanPixelError()]
+        ), MeanPixelError()]
 
