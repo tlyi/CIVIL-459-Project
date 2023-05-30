@@ -1,43 +1,223 @@
-# Pifpaf Lane Detection
-Project description
+# OpenPifPaf Lane Detection
+
+## Quick Navigation
 --------------------
-This project is part of EPFL Deep Learning for Autonomous Vehicles class, aiming to solve one sub-task related to autonomous driving:
-lane detection. Despite the state-of-the-art 3d lane detection models like [PersFormer](https://github.com/OpenDriveLab/PersFormer_3DLane) 
-using anchor-based perspective transformer to transform front-eye-view features to bird-eye view features, we are inspired by the idea of [openpifpaf](https://openpifpaf.github.io/intro.html), which achieves human pose-estimation by detecting and associating spatial-temporal human joint keypoints.
-Using the same idea, we are trying here to simplify the task of detecting and regressing potentially hundreds or even thousands of pixel points of road lane to a few key points and connect them to form an estimate of a lane, which may significantly reduce the time required for lane detection. 
+- [p]
+- [Project Description](#project-description)
+- [Contribution Overview](#contribution-overview)
 
-Essentially, our contribution is to extend the function of [openpifpaf](https://openpifpaf.github.io/intro.html) to lane detection by enabling it to be trained 
-on a whole different dataset: [OpenLane](https://github.com/OpenDriveLab/OpenLane). We transformed OpenLane dataset to CoCo format and downsampled original
-lane annotation to several keypoints (24 and 2, respectively). Plugin necessities were implemented without changing the main body of openpifpaf,
-making it easy to comply with the original model. To note that due to the very different nature of the two datasets plus time and resource limit, 
-our progress is currently mainly on 2d lane detection with massive debugging, explorations, trial and error, but the preliminary results show the feasibility 
-of this idea and clear way to 3d lane detection extension.
 
-Dataset description
--------------------
-Description of the dataset + label format + where/how to acquire it. What data do I need
-to train your model? How do I get it? In what shape?
+## Project Description
+--------------------
+This project is part of EPFL's "Deep Learning for Autonomous Vehicles" course. 
+This year, the final goal of the course is to build the main computer vision components of an autonomous vehicle. This project aims to contribute to one small but important module of this big system, 3D lane detection. 
 
-Installation
+We are inspired by the idea of [OpenPifPaf](https://openpifpaf.github.io/intro.html), which achieves human pose-estimation by detecting and associating spatial-temporal human joint keypoints.
+
+Using the same concept, we see the potential to simplify the task of detecting and regressing potentially hundreds or even thousands of pixel points of road lane to just a few key points and connect them to form an estimate of a lane. We hope that this opens up hope for a new framework that can significantly reduce the time required for lane detection.
+
+## Contribution Overview
+--------------------
+
+In summary, our contribution is to extend the function of [OpenPifPaf](https://openpifpaf.github.io/intro.html) to lane detection by enabling it to be trained on a whole different dataset: [OpenLane](https://github.com/OpenDriveLab/OpenLane). We transformed OpenLane dataset to CoCo format and downsampled originallane annotations to several keypoints (24 and 2, respectively). Plugin necessities were implemented without changing the main body of openpifpaf, making the project easdy to install and set up. To note that due to the very different nature of the two datasets plus time and resource limit, our progress is currently mainly on 2d lane detection with massive debugging, explorations, trial and error, but the preliminary results show the feasibility of this idea and clear way to 3d lane detection extension.
+
+## Installation
 -------------
-how to install this package and original openpifpaf, any modifications needed for original openpifpaf?
+### 1. Clone this repository
+``` bash
+git clone https://github.com/tlyi/CIVIL-459-Project.git
+```
 
-Code
+### 2. Install OpenPifPaf
+This will also install all the required dependencies. We recommend doing this in a virtual environment like Anaconda. 
+``` bash
+pip3 install openpifpaf
+```
+
+OpenPifPaf uses a Plugin architectural pattern which allows us to train it on a custom dataset without having to alter the core network. 
+
+The required files to register our dataset as a plugin is contained in the folder `openpifpaf_openlane`. (IMPORTANT: Do not change the name of this folder as OpenPifPaf requires this naming convention to recognise the plugin.)
+
+### 3. Download checkpoint (optional)
+The dataset that we are using is very big and will take days to train. We have provided a [checkpoint](https://drive.google.com/file/d/1hZ_i7mUqdG1Juec5Vyv3Cok-6br7xJTP/view?usp=sharing) that has already been trained on 38 epochs. You may choose to train either from scratch (not recommended), or from one of the backbones provided by OpenPifPaf, or on top of our provided checkpoint. 
+
+## Dataset Description
+--------------
+The dataset that we have chosen to work with is [OpenLane](https://github.com/OpenDriveLab/OpenLane). OpenLane is the largest scale real world 3D lane dataset. It owns 200K frames and over 880K carefully annotated lanes, where all lanes are annotated with both 2D and 3D information in every frame. For the purpose of this project, we will only be using the 2D lane annotations.
+
+To prepare the dataset for training, you may follow the steps below.
+
+### 1. Download OpenLane
+
+Follow the [download instructions](https://github.com/OpenDriveLab/OpenLane/tree/main#download) given by OpenLane.
+
+The only folders needed are all the image folders and `lane3d_300`, which is a subset of the dataset that contains annotations for 300 sequences of lanes. Note that you can also use `lane3d_1000`, which would give the whole dataset. 
+
+From now, we will refer to `lane3d_300`/`lane3d_1000` as `annotations` for greater clarity.
+
+### 2. Organise folder structure
+
+Organise the folder structure as follows:
+```
+├── images        #to be known as IMAGE_DIR
+|   ├── training
+|   |   ├── segment-xxx
+|   |   |   ├── xxx.jpg
+|   |   |   └── ...
+|   └── validation
+|       ├── segment-xxx
+|       |   ├── xxx.jpg
+|       |   └── ...
+├── annotations    #to be known as ANN_DIR
+|   ├── training
+|   |   ├── segment-xxx
+|   |   |   ├── xxx.json
+|   |   |   └── ...
+|   ├── validation
+|   |   ├── segment-xxx
+|   |   |   ├── xxx.json
+|   |   |   └── ...
+|   └── test
+|       ├── curve_case
+|       |   ├── segment-xxx
+|       |   |   ├── xxx.json
+|       |   |   └── ...
+|       ├── ...
+|       ├── curve_case.txt
+|       ├── xxx.txt
+
+```
+
+This is important to ensure that the folder structure is compatible with our preprocessing code.
+
+### 3. Preprocess dataset
+OpenPifPaf is built with a default dataloader that works with COCO-style annotations. To make use of this, instead of writing our own dataloader, we have decided to transform the OpenLane annotations into a single COCO-style `.json` file instead. We have written a script, `openlane_to_coco.py` for this reason. 
+
+`openlane_to_coco.py` will take all the 2D lane annotations, downsample them to 24 points, calculate a bounding box that contains all 24 points, and combine the information into a single `.json` file following the annotation style of the COCO dataset. You may read [this](https://opencv.org/introduction-to-the-coco-dataset/) to find out more about COCO dataset.
+
+To use the script, simply replace the file paths as needed and run the following command:
+
+```bash
+python3 -m openpifpaf_openlane.openlane_to_coco \
+    --dir_data= ANN_DIR \
+    --dir_images= IMAGE_DIR \
+    --dir_out= OUTPUT_DIR \
+    --sample
+```
+As the original number of annotations is huge and will require a lot of computation for training, we have chosen to keep just 10% of the annotations by providing the `--sample` argument. You may choose to omit this argument if you have the computational means. 
+
+### 4. Visualise processed data
+We have provided a Jupyter notebook, `visualise_annotations.ipynb`, that you can use to visualise the annotations on top of the original images. This is a sample of how it is supposed to look like:
+
+To compare it with the original annotations by OpenLane, you may use `visualise_annotations_openlane.ipynb`.
+
+
+## Code
 ------
-Train, predict, evaluation, flag arguments
+*   **Train**
 
-Experimental setup
+For training on OpenLane dataset, you can run `./train_job.sh` after proper modifications to the `train.bat` parameters and directories to submit training job to 
+HPC resources like scitas, or write a script as following, with modification to parameters you would like to tune and experiment with.
+
+```
+python3 -m openpifpaf.train --lr=0.002 --momentum=0.9 --b-scale=5.0 \
+  --epochs=1000 \
+  --lr-warm-up-factor=0.25 \
+  --output=outputs/openlane_train \
+  --batch-size=5  --val-batches=1 --val-interval=10 \
+  --weight-decay=1e-5 \
+  --dataset=openlane \
+  --basenet=shufflenetv2k16 \
+  --openlane-train-annotations data_openlane_2kps/annotations/openlane_keypoints_sample_training.json \  ##specify the dir of training annotations stored after converting your dataset
+  --openlane-val-annotations data_openlane_2kps/annotations/openlane_keypoints_sample_validation.json \
+  --openlane-train-image-dir /work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/training \
+  --openlane-val-image-dir /work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/validation \
+  --loader-workers 1
+```
+
+Some other useful flag arguments include:
+
+```
+--debug                             # print debug messages (default: False)
+                                    # and turn off the dataset shuffle 
+                            
+--checkpoint CHECKPOINT             # train on top of previously trained
+                                    # checkpoints, this cannot be used 
+                                    # with --basenet at the same time.
+
+--train-batches TRAIN_BATCHES
+                                    # specify the number of batches 
+                                    # trainned per epoch, you can 
+                                    # assign it to a small number 
+                                    # like 1 to overfit on sigle image 
+
+--openlane-no-augmentation
+                                    # do not apply data augmentation on OpenLane
+                             
+```
+And if you are interested in training this network on an HPC like EPFL scitas, you can add on top of the previous script the following code:
+
+```
+#!/bin/bash
+#SBATCH --nodes 1
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 1
+#SBATCH --mem 8G
+#SBATCH --partition gpu
+#SBATCH --gres gpu:1
+#SBATCH --qos dlav
+#SBATCH --account civil-459-2023
+
+#SBATCH --time 3-00:00:00
+
+echo STARTING
+```
+
+
+*   **Predict**
+
+Prediction runs as standard openpifpaf predict command, but using the pretrained model on lanes. The script look like the following:
+ ```
+ python3 -m openpifpaf.predict  \
+         --checkpoint <specify the checkpoint path> \ 
+         --force-complete-pose --debug-indices cif:0 caf:0 \
+         --long-edge=425 --loader-workers=1 \ 
+         --save-all # save every debug plot
+         --image-output <optionally specify output dir and file name> \
+         <path of the image you want to perform prediction on>  
+```
+You can also decide whether to output a json file, with the option to specify the output path or directory (default: None) using `--json-output`.
+In addition, you can also decide whether you want to interactively show the plots in matplotlib with `--show` (use itermplot, for instance)
+or to save image files with `--save-all` (defaults to the all-images/ directory). 
+
+The necessary scripts are already in `predict.sh`, you can simply run `./predict.sh` after modifications.
+
+
+*   **Evaluate**
+
+To evaluate the pretrained model, use:
+```
+python3 -m openpifpaf.eval \
+--dataset=openlane --loader-workers=1 \
+--checkpoint <checkpoint path> \
+--force-complete-pose --seed-threshold=0.2 \ 
+```
+Evaluation metrics like average precision (AP) are created with this tool.
+
+## Experimental setup
 ------------------
+Model with 24 keypoints connecting with each other one by one as a skeleton was first implemented for a finer estimation of lane pose like a turn. The keypoints were obtained by uniformly downsampling from the original lane annotations We performed overfitting on a single image for 1000 epochs and also ran on 10% of the whole dataset for 25 epochs.
+
 What are the experiments you conducted? What are the evaluation
 metrics?
 
-Results
---------
+## Results
+
 *   **24 keypoints**
 
 *   **2 keypoints (closest and most far away)**
 
-Conclusion
-----------
+## Conclusion
+
 Short one
 
