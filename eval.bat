@@ -17,4 +17,4 @@ python3 -m openpifpaf.eval \
 --openlane-val-annotations data_openlane_2kps/annotations/openlane_keypoints_sample_validation.json \
 --openlane-train-image-dir /work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/training \
 --openlane-val-image-dir /work/scitas-share/datasets/Vita/civil-459/OpenLane/raw/images/validation \
---output eval/2kps_meanpixelerror_print
+--output eval/2kps_meanpixelerror_print3

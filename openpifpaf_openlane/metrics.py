@@ -38,12 +38,14 @@ class MeanPixelError(Base):
 
         # Filter ground-truth
         for annotation in ground_truth:
+            print('before isinstance')
             if not isinstance(annotation, Annotation):
                 continue
             indices_gt = np.nonzero(annotation.data[:, 2] > 1.0)
             if indices_gt[0].size <= 3:
                 continue
             gts = annotation.data[indices_gt, 0:2].squeeze()
+            print('gts = ', gts)
             width = float(annotation.fixed_bbox[2])
             height = float(annotation.fixed_bbox[3])
             scale = np.array([self.px_ref / width, self.px_ref / height]).reshape(1, 2)
@@ -65,10 +67,12 @@ class MeanPixelError(Base):
                     detections.append(1)
                 else:
                     detections.append(0)
+                    print('d = ', d )
                 if d_scaled < 10:
                     errors_scaled.append(d)
                     detections_scaled.append(1)
                 else:
+                    print('d_scaled = ', d_scaled)
                     detections_scaled.append(0)
 
         # Stats for a single image
