@@ -5,3 +5,4 @@ data_openlane/
 *.out
 outputs/
 core.*
+course-test/
