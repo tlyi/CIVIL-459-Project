@@ -206,7 +206,12 @@ Evaluation metrics like average precision (AP) are created with this tool.
 
 ## Experimental setup
 ------------------
-Model with 24 keypoints connecting with each other one by one as a skeleton was first implemented for a finer estimation of lane pose like a turn. The keypoints were obtained by uniformly downsampling from the original lane annotations We performed overfitting on a single image for 1000 epochs and also ran on 10% of the whole dataset for 25 epochs.
+Model with 24 keypoints connecting with each other one by one as a skeleton was first implemented for a finer estimation of lane pose like a turn. The keypoints were obtained by uniformly downsampling from the original lane annotations We managed to perform overfitting on a single image for 1000 epochs and also ran on 10% of the whole dataset for 38 epochs.
+
+The metrics used for evaluation follows COCO's keypoint evaluation method. The object keypoint similarity (OKS) score is used to assign a bounding box 
+to each keypoint as a function of the person instance bounding box area. Similar to detection, the metric computes overlaps between ground truth and predicted bounding boxes to compute the standard detection metrics average precision (AP) and average recall (AR).
+
+It didn't take us very long to realize it is not fair for lane keypoint detection using our downsample method. By this method, we are asking the model to detect exactly these 24 points on the lane mark
 
 What are the experiments you conducted? What are the evaluation
 metrics?
