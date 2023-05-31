@@ -1,7 +1,6 @@
 # OpenPifPaf Lane Detection
 
 ## Quick Navigation
---------------------
 - [Project Description](#project-description)
 - [Contribution Overview](#contribution-overview)
 - [Installation](#installation)
@@ -18,21 +17,18 @@
 
 
 ## Project Description
---------------------
 This project is part of EPFL's "Deep Learning for Autonomous Vehicles" course. 
 This year, the final goal of the course is to build the main computer vision components of an autonomous vehicle. This project aims to contribute to one small but important module of this big system, 3D lane detection.ich e are inspired by the idea of [OpenPifPaf](https://openpifpaf.github.io/intro.html), which achieves human pose-estimation by detecting and associating spatial-temporal human joint keypoints.
 
 We see the potential in using the same concept to simplify the task of detecting and regressing potentially hundreds or even thousands of pixel points of road lane to just a few key points and connect them to form an estimate of a lane. We hope that this opens up hope for a new framework that can significantly reduce the time required for lane detection.
 
 ## Contribution Overview
---------------------
 
 In summary, our contribution is to extend the function of [OpenPifPaf](https://openpifpaf.github.io/intro.html) by creating a plugin for it that enables it to perform lane detection. This would enable it to be trained and evaluated on a whole different dataset: [OpenLane](https://github.com/OpenDriveLab/OpenLane). Plugin necessities were implemented without changing the main body of OpenPifPaf, making the project easy to install and set up. 
 
 Due to the very different nature of the two datasets, coupled with time and resource limits, our progress is currently mainly on 2D lane detection. However, the preliminary results prove the feasibility of this idea and opens up the possibility of extension to 3D lane detection. 
 
 ## Installation
--------------
 ### 1. Clone this repository
 ``` bash
 git clone https://github.com/tlyi/CIVIL-459-Project.git
@@ -52,7 +48,6 @@ The required files to register our dataset as a plugin is contained in the folde
 The dataset that we are using is very big and will take days to train. We have provided a [checkpoint](https://drive.google.com/file/d/1IEKkXFKS5HWgyEEhrRoDiCdvLgZRtmV7/view?usp=sharing) that has already been trained on 30 epochs on 10% of the dataset. You may choose to train either from scratch (not recommended), or from one of the backbones provided by OpenPifPaf, or on top of our provided checkpoint. 
 
 ## Dataset Description
---------------
 The dataset that we have chosen to work with is [OpenLane](https://github.com/OpenDriveLab/OpenLane). OpenLane is the largest scale real world 3D lane dataset. It owns 200K frames and over 880K carefully annotated lanes, where all lanes are annotated with both 2D and 3D information in every frame. For the purpose of this project, we will only be using the 2D lane annotations.
 
 To prepare the dataset for training, you may follow the steps below.
@@ -121,13 +116,15 @@ As the original number of annotations is huge and will require a lot of computat
 ### 4. Visualise processed data
 We have provided a Jupyter notebook, `visualise_annotations.ipynb`, that you can use to visualise the annotations on top of the original images. This is a sample of how a COCO-style annotation is supposed to look like on OpenLane data:
 
-![COCO Annotations on OpenLane](https://github.com/tlyi/CIVIL-459-Project/assets/69505852/c3e87524-bd2b-4870-b0bd-596e2e6d9d5b)
+<p align="center" width="100%">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/c3e87524-bd2b-4870-b0bd-596e2e6d9d5b">
+</p>
 
 To compare it with the original annotations by OpenLane, you may use `visualise_annotations_openlane.ipynb`.
 
 
 ## Code
-------
+
 ### Train 
 
 For training on OpenLane dataset, you can run `./train_job.sh` after proper modifications to the `train.bat` parameters and directories. Note that our bash script is written with the intention to submit a batch job to HPC resources like SCITAS. If you do not require this, do alter the commands as you deem fit. 
@@ -215,7 +212,9 @@ To provide the network with a skeleton to work with, we simply plot out 24 keypo
 #### 2. Overfitting on a single image
 To verify that our method is working, we first performed overfitting on a single image for 1000 epochs. The loss decreased from 1.22539 to 0.19944, which is the same loss fundtion defined by [Kreiss et al.](https://arxiv.org/abs/2103.02440), consisting of confidence, localization and scale.  
 
-
+<p align="center" width="100%">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/30951a79-7ba8-4a08-b1c1-e85d12051494">
+</p>
 
 #### 3. Experiment with learning rates
 
@@ -251,7 +250,10 @@ After training for 1000 epochs of single image, the prediction on the same image
 
 Visualization of the components of CIF for the closest keypoint and CAF for the 2 keypoint association is shown below: 
 
-![Result of overfitting](https://github.com/tlyi/CIVIL-459-Project/assets/69505852/30951a79-7ba8-4a08-b1c1-e85d12051494)
+
+<p align="center" width="100%">
+    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/ad078c0a-0710-4386-ba5f-481aee99cf3f">
+</p>
 
 #### 5% dataset run
 Predictions on validation images are shown below. Straight lanes are properly detected and curved lanes are simplified as expected.
