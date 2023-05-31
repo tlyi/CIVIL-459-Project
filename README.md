@@ -1,4 +1,7 @@
 # OpenPifPaf Lane Detection
+<p align="center" width="100%">
+    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/35edc49b-4afe-48e3-af65-32740b9c46c7">
+</p>
 
 ## Quick Navigation
 - [Project Description](#project-description)
@@ -237,19 +240,19 @@ As observed, the model seems quite able to visually detect every lane. However, 
 #### 5. Experiment with learning rates
 After several rounds of trials and error, we settled on a learning rate of 0.001. While we observed that the loss was decreasing steadily over time, we found that the rate of decrease was rather slow, which we deduced could be attributed to a low learning rate. However, when we increased the learning rate to 0.002, we experienced infinite loss. Hence, we decided to keep the learning rate at 0.001.
 
-## Results
+## Results!
+
 The below images visualises the components of Composite Intensity Field (CIF) and Composite Association Field (CAF) for the closest keypoint and finally outputs the overall prediction. CIF characterises the intensity of predicted keypoints and CAF characterises the intensity of predicted association between keypoints. Together, these two components enable the model to identify and form connections between keypoints. For more information about CIF and CAF, you may refer to the [paper](https://arxiv.org/abs/2103.02440) written by the creators of OpenPifPaf. 
 
 *   **24 keypoints**
-
-[gif]
+<p align="center" width="100%">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/118620053/9f4784e7-af24-4621-ad0f-65617e4d1fb8">
+</p>
 
 *   **2 keypoints (closest and furthest)**
-
-
-[gif]
-
-
+<p align="center" width="100%">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/118620053/702cb3b5-97fc-4dc0-83eb-2f8716ef9693">
+</p>
 
 
 
@@ -277,7 +280,7 @@ The metrics used for evaluation follows [COCO's](https://arxiv.org/abs/2103.0244
 We can either investigate the feasible scale and position of bounding box assigning for a lane keypoint to enlarge overlapping between 2 neighbor points on the lane, or implement starting point,distance rule, and ending point during keypoint downsampling for training to make the detection learnable.    
 
 #### 3. Extend to 3D space
-Since the COCO annotations were designed to work with 2D objects, we found it difficult to translate it to 3D space. Specifically, we were unsure how we could define a bounding box in 3D space. To overcome this, it is possible to instead write our own dataloader, or combine OpenPifPaf with state-of-the-art spatial transformation methods like (PersFormer)[https://arxiv.org/abs/2203.11089].
+Since the COCO annotations were designed to work with 2D objects, we found it difficult to translate it to 3D space. Specifically, we were unsure how we could define a bounding box in 3D space. To overcome this, it is possible to instead write our own dataloader, or combine OpenPifPaf with state-of-the-art spatial transformation methods like [PersFormer](https://arxiv.org/abs/2203.11089).
 
 ## Conclusion
 We have visually demonstrated the feasibility of extending the capabilities of OpenPifPaf to the task of lane detection.
