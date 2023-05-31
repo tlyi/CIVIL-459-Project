@@ -246,13 +246,15 @@ The below images visualises the components of Composite Intensity Field (CIF) an
 
 *   **24 keypoints**
 <p align="center" width="100%">
-    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/118620053/9f4784e7-af24-4621-ad0f-65617e4d1fb8">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/118620053/b08f6d24-c092-4fa5-94bc-da36408b7dae">
 </p>
+
 
 *   **2 keypoints (closest and furthest)**
 <p align="center" width="100%">
-    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/118620053/702cb3b5-97fc-4dc0-83eb-2f8716ef9693">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/118620053/ef21b9e5-b1f1-4d3a-8693-36e9a445eef4">
 </p>
+
 
 
 
