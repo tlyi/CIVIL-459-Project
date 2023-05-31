@@ -242,7 +242,7 @@ After several rounds of trials and error, we settled on a learning rate of 0.001
 
 ## Results
 
-The below images visualises the components of Composite Intensity Field (CIF) and Composite Association Field (CAF) for the closest keypoint and finally outputs the overall prediction. CIF characterises the intensity of predicted keypoints and CAF characterises the intensity of predicted association between keypoints. Together, these two components enable the model to identify and form connections between keypoints. For more information about CIF and CAF, you may refer to the [paper](https://arxiv.org/abs/2103.02440) written by the creators of OpenPifPaf. 
+The below images visualises the components of Composite Intensity Field (CIF) and Composite Association Field (CAF) and finally outputs the overall prediction. CIF characterises the intensity of predicted keypoints and CAF characterises the intensity of predicted association between keypoints. Together, these two components enable the model to identify and form connections between keypoints. For more information about CIF and CAF, you may refer to the [paper](https://arxiv.org/abs/2103.02440) written by the creators of OpenPifPaf. 
 
 *   **24 keypoints**
 <p align="center" width="100%">
