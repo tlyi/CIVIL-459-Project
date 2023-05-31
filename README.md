@@ -121,6 +121,7 @@ As the original number of annotations is huge and will require a lot of computat
 ### 4. Visualise processed data
 We have provided a Jupyter notebook, `visualise_annotations.ipynb`, that you can use to visualise the annotations on top of the original images. This is a sample of how a COCO-style annotation is supposed to look like on OpenLane data:
 
+![COCO Annotations on OpenLane](https://github.com/tlyi/CIVIL-459-Project/assets/69505852/c3e87524-bd2b-4870-b0bd-596e2e6d9d5b)
 
 To compare it with the original annotations by OpenLane, you may use `visualise_annotations_openlane.ipynb`.
 
@@ -214,6 +215,8 @@ To provide the network with a skeleton to work with, we simply plot out 24 keypo
 #### 2. Overfitting on a single image
 To verify that our method is working, we first performed overfitting on a single image for 1000 epochs. The loss decreased from 1.22539 to 0.19944, which is the same loss fundtion defined by [Kreiss et al.](https://arxiv.org/abs/2103.02440), consisting of confidence, localization and scale.  
 
+
+
 #### 3. Experiment with learning rates
 
 
@@ -248,8 +251,7 @@ After training for 1000 epochs of single image, the prediction on the same image
 
 Visualization of the components of CIF for the closest keypoint and CAF for the 2 keypoint association is shown below: 
 
-
-
+![Result of overfitting](https://github.com/tlyi/CIVIL-459-Project/assets/69505852/30951a79-7ba8-4a08-b1c1-e85d12051494)
 
 #### 5% dataset run
 Predictions on validation images are shown below. Straight lanes are properly detected and curved lanes are simplified as expected.
