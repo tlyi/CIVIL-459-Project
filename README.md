@@ -218,7 +218,7 @@ Using this method, we observed that the results were more consistent.
 
 #### 3. Modelling the start and end of the lane (2 keypoints)
 
-While we were able to yield consistent result using only one keypoint, this information is essentially not meaningful in the lane detection task, Therefore, we also implemented our plugin using only 2 keypoints with a new downsample strategy: keeping only the closest and the furthest lane points. Ideally, the model would learn to detect the start and end points of the lane and link them together. 
+While we were able to yield consistent result using only one keypoint, this information is essentially not meaningful in the lane detection task. Therefore, we also implemented our plugin using only 2 keypoints with a new downsample strategy: keeping only the closest and the furthest lane points. Ideally, the model would learn to detect the start and end points of the lane and link them together. 
 
 This is certainly just a coarse straight-line estimation for the lane and it cannot model more complex lanes such as turns. However, it paves the way for the subsequent development of a more reasonable downsample strategy for middle points.
 
