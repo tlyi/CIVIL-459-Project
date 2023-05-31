@@ -20,7 +20,7 @@
 
 
 ## Project Description
-This project is part of EPFL's "Deep Learning for Autonomous Vehicles" course. 
+This project is part of EPFL's CIVIL-459 "Deep Learning for Autonomous Vehicles" course. 
 This year, the final goal of the course is to build the main computer vision components of an autonomous vehicle. This project aims to contribute to one small but important module of this big system, 3D lane detection. We are inspired by the idea of [OpenPifPaf](https://openpifpaf.github.io/intro.html), which achieves human pose-estimation by detecting and associating spatial-temporal human joint keypoints.
 
 We see the potential in using the same concept to simplify the task of detecting and regressing potentially hundreds or even thousands of pixel points of road lane to just a few key points and connect them to form an estimate of a lane. We hope that this opens up hope for a new framework that can significantly reduce the time required for lane detection.
@@ -286,7 +286,7 @@ Since the COCO annotations were designed to work with 2D objects, we found it di
 We have visually demonstrated the feasibility of extending the capabilities of OpenPifPaf to the task of lane detection.
 While there exists plenty of space for improvement, we are satisfied with the results we have achieved given the time and resource constraints, and believe that it still serves as a meaningful preliminary proof of concept for the task. 
 
-Through working on this project, we were able to apply all our learnings from this course and see for ourselves the massive potential that deep learning has to offer in the field of autonomous vehicles. It has truly been a fruitful journey. We are grateful for the help from teaching team.
+Through working on this project, we were able to apply all our learnings from this course and see for ourselves the massive potential that deep learning has to offer in the field of autonomous vehicles. It has truly been a fruitful journey. We are grateful for the help and guidance from the teaching team of CIVIL-459.
 
 ## References
 Kreiss, S., Bertoni, L., &amp; Alahi, A. (2022). OpenPifPaf: Composite fields for semantic keypoint detection and spatio-temporal association. IEEE Transactions on Intelligent Transportation Systems, 23(8), 13498–13511. https://doi.org/10.1109/tits.2021.3124981 
