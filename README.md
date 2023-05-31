@@ -232,7 +232,8 @@ For this 2-keypoints model, we also conducted both overfitting experiments with 
 
 
 *   **2 keypoints (closest and furthest)**
-
+#### Overfitting
+After training for 1000 epochs of single image
 
 ## Further Improvements
 
