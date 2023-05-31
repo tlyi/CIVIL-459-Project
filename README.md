@@ -1,6 +1,6 @@
 # OpenPifPaf Lane Detection
 <p align="center" width="100%">
-    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/35edc49b-4afe-48e3-af65-32740b9c46c7">
+    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/313af02f-3cca-495f-becd-d6bca832fb4c">
 </p>
 
 ## Quick Navigation
@@ -120,7 +120,7 @@ As the original number of annotations is huge and will require a lot of computat
 We have provided a Jupyter notebook, `visualise_annotations.ipynb`, that you can use to visualise the annotations on top of the original images. This is a sample of how a COCO-style annotation is supposed to look like on OpenLane data:
 
 <p align="center" width="100%">
-    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/c3e87524-bd2b-4870-b0bd-596e2e6d9d5b">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/0c03012f-7943-47c3-a8a5-208f1435f1da">
 </p>
 
 To compare it with the original annotations by OpenLane, you may use `visualise_annotations_openlane.ipynb`.
@@ -223,14 +223,14 @@ While we were able to yield consistent result using only one keypoint, this info
 This is certainly just a coarse straight-line estimation for the lane and it cannot model more complex lanes such as turns. However, it paves the way for the subsequent development of a more reasonable downsample strategy for middle points.
 
 
-If you are also interested in verifying our 2-kps model, you can simply first, delete the two files named `constants.py` and `openlane_kp.py`, and then, change the name of `constants_2kps.py` to `constants.py`, `openlane_kp_2kps.py` to `openlane_kp.py`. For trainer reading in annotations smoothly, you will need to redo the preprocess of data using `openlane_to_coco_2kp.py` as described in [Dataset Description](#dataset-description). This will extract only the start and end point coordinates annotation of every lane. Do not forget to specify the updated json file path in your trainning code.
+If you are also interested in verifying our 2-kps model, you can simply first, delete the two files named `constants.py` and `openlane_kp.py`, and then, change the name of `constants_2kps.py` to `constants.py`, `openlane_kp_2kps.py` to `openlane_kp.py`. For trainer reading in annotations smoothly, you will need to redo the preprocess of data using `openlane_to_coco_2kp.py` as described in [Dataset Description](#dataset-description). This will extract only the start and end point coordinates annotation of every lane. Do not forget to specify the updated json file path in your training code.
 
 #### 4. Overfitting on a single image
 For all the above mentioned methods, to verify that our methods are working, before training on the big dataset formally, we first performed overfitting on a single image for 1000 epochs, with a learning rate of 0.001. 
 
 These are the results after overfitting on the 2-keypoints model.
 <p align="center" width="100%">
-    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/ed88bd36-d573-4faa-97d3-6a9a3b65785c">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/7d16907d-9c9e-4662-b2f5-1ee62ec84c84">
 </p>
 
 
@@ -261,11 +261,11 @@ The below images visualises the components of Composite Intensity Field (CIF) an
 The below images show the comparison between predictions on validaton images using 24 keypoints (top) and 2 keypoints (bottom). These images were generated with the flag `--force-complete-pose` enabled as the models were unable to connect the keypoints well without it. While the outline of the lanes were modelled well, the model predicts it with very low confidence. We deduce that this could either be attributed to insufficient training epochs, or an inappropriately defined loss function (elaborated further [here](#2-redefine-evaluation-metrics)). 
 
 <p align="center" width="100%">
-    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/35edc49b-4afe-48e3-af65-32740b9c46c7">
+    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/313af02f-3cca-495f-becd-d6bca832fb4c">
 </p>
 
 <p align="center" width="100%">
-    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/fb5df390-e021-4737-a55a-6fce8f0c302c">
+    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/35a77888-632e-4cd9-86a1-bcd050705033">
 </p>
 
 Using both methods, straight lanes are properly detected. However, as expected, curved lanes are over-simplified using just 2 keypoints, while with 24 keypoints, the curves are captured quite well. 
