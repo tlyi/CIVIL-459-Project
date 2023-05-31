@@ -203,7 +203,7 @@ python3 -m openpifpaf.eval \
 ```
 Evaluation metrics like average precision (AP) are created with this tool.
 
-## Experimental setup
+## Experimental Setup
 
 To ensure that we get desirable results, we carried out a few rounds of trial and experimentation. Since there is no known example of OpenPifPaf being used on lanes, our strategy was to just try, observe the results and improve from there. 
 
@@ -240,7 +240,7 @@ As observed, the model seems quite able to visually detect every lane. However, 
 #### 5. Experiment with learning rates
 After several rounds of trials and error, we settled on a learning rate of 0.001. While we observed that the loss was decreasing steadily over time, we found that the rate of decrease was rather slow, which we deduced could be attributed to a low learning rate. However, when we increased the learning rate to 0.002, we experienced infinite loss. Hence, we decided to keep the learning rate at 0.001.
 
-## Results!
+## Results
 
 The below images visualises the components of Composite Intensity Field (CIF) and Composite Association Field (CAF) for the closest keypoint and finally outputs the overall prediction. CIF characterises the intensity of predicted keypoints and CAF characterises the intensity of predicted association between keypoints. Together, these two components enable the model to identify and form connections between keypoints. For more information about CIF and CAF, you may refer to the [paper](https://arxiv.org/abs/2103.02440) written by the creators of OpenPifPaf. 
 
