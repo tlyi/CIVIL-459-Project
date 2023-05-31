@@ -5,21 +5,31 @@
 - [Project Description](#project-description)
 - [Contribution Overview](#contribution-overview)
 - [Installation](#installation)
+- [Dataset Description](#dataset-description)
+- [Code](#code)
+  - [Train](#train)
+  - [Predict](#predict)
+  - [Evaluate](#evaluate)
+- [Experimental Setup](#experimental-setup)
+- [Results](#results)
+- [Further Improvements](#further-improvements)
+- [Conclusion](#conclusion)
+- [References](#references)
 
 
 ## Project Description
 --------------------
 This project is part of EPFL's "Deep Learning for Autonomous Vehicles" course. 
-This year, the final goal of the course is to build the main computer vision components of an autonomous vehicle. This project aims to contribute to one small but important module of this big system, 3D lane detection. 
-
-We are inspired by the idea of [OpenPifPaf](https://openpifpaf.github.io/intro.html), which achieves human pose-estimation by detecting and associating spatial-temporal human joint keypoints.
+This year, the final goal of the course is to build the main computer vision components of an autonomous vehicle. This project aims to contribute to one small but important module of this big system, 3D lane detection.ich e are inspired by the idea of [OpenPifPaf](https://openpifpaf.github.io/intro.html), which achieves human pose-estimation by detecting and associating spatial-temporal human joint keypoints.
 
 We see the potential in using the same concept to simplify the task of detecting and regressing potentially hundreds or even thousands of pixel points of road lane to just a few key points and connect them to form an estimate of a lane. We hope that this opens up hope for a new framework that can significantly reduce the time required for lane detection.
 
 ## Contribution Overview
 --------------------
 
-In summary, our contribution is to extend the function of [OpenPifPaf](https://openpifpaf.github.io/intro.html) to lane detection by enabling it to be trained on a whole different dataset: [OpenLane](https://github.com/OpenDriveLab/OpenLane). We transformed OpenLane dataset to CoCo format and downsampled originallane annotations to several keypoints (24 and 2, respectively). Plugin necessities were implemented without changing the main body of openpifpaf, making the project easdy to install and set up. To note that due to the very different nature of the two datasets plus time and resource limit, our progress is currently mainly on 2d lane detection with massive debugging, explorations, trial and error, but the preliminary results show the feasibility of this idea and clear way to 3d lane detection extension.
+In summary, our contribution is to extend the function of [OpenPifPaf](https://openpifpaf.github.io/intro.html) by creating a plugin for it that enables it to perform lane detection. This would enable it to be trained and evaluated on a whole different dataset: [OpenLane](https://github.com/OpenDriveLab/OpenLane). Plugin necessities were implemented without changing the main body of OpenPifPaf, making the project easy to install and set up. 
+
+Due to the very different nature of the two datasets, coupled with time and resource limits, our progress is currently mainly on 2D lane detection. However, the preliminary results prove the feasibility of this idea and opens up the possibility of extension to 3D lane detection. 
 
 ## Installation
 -------------
@@ -39,7 +49,7 @@ OpenPifPaf uses a Plugin architectural pattern which allows us to train it on a 
 The required files to register our dataset as a plugin is contained in the folder `openpifpaf_openlane`. (IMPORTANT: Do not change the name of this folder as OpenPifPaf requires this naming convention to recognise the plugin.)
 
 ### 3. Download checkpoint (optional)
-The dataset that we are using is very big and will take days to train. We have provided a [checkpoint](https://drive.google.com/file/d/1IEKkXFKS5HWgyEEhrRoDiCdvLgZRtmV7/view?usp=sharing) that has already been trained on 30 epochs. You may choose to train either from scratch (not recommended), or from one of the backbones provided by OpenPifPaf, or on top of our provided checkpoint. 
+The dataset that we are using is very big and will take days to train. We have provided a [checkpoint](https://drive.google.com/file/d/1IEKkXFKS5HWgyEEhrRoDiCdvLgZRtmV7/view?usp=sharing) that has already been trained on 30 epochs on 10% of the dataset. You may choose to train either from scratch (not recommended), or from one of the backbones provided by OpenPifPaf, or on top of our provided checkpoint. 
 
 ## Dataset Description
 --------------
@@ -197,14 +207,16 @@ Evaluation metrics like average precision (AP) are created with this tool.
 To ensure that we get desirable results, we carried out a few rounds of trial and experimentation. Since there is no known example of OpenPifPaf being used on lanes, our strategy was to just try, observe the results and improve from there. 
 
 #### 1. Modelling the lanes as 24 keypoints
-In the original annotations, the lanes have varying number of keypoints, ranging from tens to hundreds. However, OpenPifPaf requires there to be a fixed number of keypoints so that the network is able to learn how to identify and connect them together. We chose 24 keypoints as it has been used to [identify car poses](https://openpifpaf.github.io/dev/plugins_apollocar3d.html#evaluation) successfully, so we know that it is not too few or many for the network. It also seemed to be a sufficient number to capture details in lane poses, such as turns. 
+In the original annotations, the lanes are identified by a varying number of keypoints, ranging from tens to hundreds. However, OpenPifPaf requires there to be a fixed number of keypoints so that the network is able to learn how to identify and connect them together. We chose 24 keypoints as it has been used to [identify car poses](https://openpifpaf.github.io/dev/plugins_apollocar3d.html#evaluation) successfully, so we know that it is not too few or many for the network. It also seemed to be a sufficient number to capture details in lane poses, such as turns. 
 
 To provide the network with a skeleton to work with, we simply plot out 24 keypoints and connected them to each other. The keypoints were obtained by uniformly downsampling from the original lane annotations.
 
 #### 2. Overfitting on a single image
-We managed to perform overfitting on a single image for 1000 epochs and also ran on 10% of the whole dataset for 30 epochs.
+To verify that our method is working, we first performed overfitting on a single image for 1000 epochs. 
+[insert data]
 
 #### 3. Experiment with learning rates
+
 
 #### 4. Modelling just the start of the lane (1 keypoint)
 
@@ -233,11 +245,26 @@ For this 2-keypoints model, we also conducted both overfitting experiments with 
 
 *   **2 keypoints (closest and furthest)**
 #### Overfitting
-After training for 1000 epochs of single image
+After training for 1000 epochs of single image, the prediction on the same image seems quite able to visually detect every lane. There're some mismatch though, it seems to connect points from different lanes when there's visual occlusion from other vehicles.
+
+Visualization of the components of CIF for the closest keypoint and CAF for the 2 keypoint association is shown below: 
+
+
+
+
+#### 5% dataset run
+Predictions on validation images are shown below. Straight lanes are properly detected and curved lanes are simplified as expected.
+
+
 
 ## Further Improvements
 
 ## Conclusion
 
 Short one
+
+## References
+Kreiss, S., Bertoni, L., &amp; Alahi, A. (2022). OpenPifPaf: Composite fields for semantic keypoint detection and spatio-temporal association. IEEE Transactions on Intelligent Transportation Systems, 23(8), 13498–13511. https://doi.org/10.1109/tits.2021.3124981 
+
+Chen, L., Sima, C., Li, Y., Zheng, Z., Xu, J., Geng, X., Li, H., He, C., Shi, J., Qiao, Y., &amp; Yan, J. (2022). PERSFORMER: 3D lane detection via&nbsp;perspective transformer and&nbsp;the&nbsp;openlane benchmark. Lecture Notes in Computer Science, 550–567. https://doi.org/10.1007/978-3-031-19839-7_32 
 
