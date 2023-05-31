@@ -18,7 +18,7 @@
 
 ## Project Description
 This project is part of EPFL's "Deep Learning for Autonomous Vehicles" course. 
-This year, the final goal of the course is to build the main computer vision components of an autonomous vehicle. This project aims to contribute to one small but important module of this big system, 3D lane detection.we are inspired by the idea of [OpenPifPaf](https://openpifpaf.github.io/intro.html), which achieves human pose-estimation by detecting and associating spatial-temporal human joint keypoints.
+This year, the final goal of the course is to build the main computer vision components of an autonomous vehicle. This project aims to contribute to one small but important module of this big system, 3D lane detection. We are inspired by the idea of [OpenPifPaf](https://openpifpaf.github.io/intro.html), which achieves human pose-estimation by detecting and associating spatial-temporal human joint keypoints.
 
 We see the potential in using the same concept to simplify the task of detecting and regressing potentially hundreds or even thousands of pixel points of road lane to just a few key points and connect them to form an estimate of a lane. We hope that this opens up hope for a new framework that can significantly reduce the time required for lane detection.
 
@@ -227,7 +227,7 @@ For all the above mentioned methods, to verify that our methods are working, bef
 
 These are the results after overfitting on the 2-keypoints model.
 <p align="center" width="100%">
-    <img width="50%" src="">
+    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/ed88bd36-d573-4faa-97d3-6a9a3b65785c">
 </p>
 
 
@@ -245,20 +245,23 @@ The below images visualises the components of Composite Intensity Field (CIF) an
 [gif]
 
 *   **2 keypoints (closest and furthest)**
-#### Overfitting
 
 
 [gif]
 
 
 
-<p align="center" width="100%">
-    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/ad078c0a-0710-4386-ba5f-481aee99cf3f">
-</p>
+
 
 The below images show the comparison between predictions on validaton images using 24 keypoints (top) and 2 keypoints (bottom). These images were generated with the flag `--force-complete-pose` enabled as the models were unable to connect the keypoints well without it. While the outline of the lanes were modelled well, the model predicts it with very low confidence. We deduce that this could either be attributed to insufficient training epochs, or an inappropriately defined loss function (elaborated further [here](#2-redefine-evaluation-metrics)). 
 
+<p align="center" width="100%">
+    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/35edc49b-4afe-48e3-af65-32740b9c46c7">
+</p>
 
+<p align="center" width="100%">
+    <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/fb5df390-e021-4737-a55a-6fce8f0c302c">
+</p>
 
 Using both methods, straight lanes are properly detected. However, as expected, curved lanes are simplified using just 2 keypoints, while with 24 keypoints, the curves are captured quite well. 
 
