@@ -40,12 +40,12 @@ This will also install all the required dependencies. We recommend doing this in
 pip3 install openpifpaf
 ```
 
-OpenPifPaf uses a Plugin architectural pattern which allows us to train it on a custom dataset without having to alter the core network. 
+OpenPifPaf uses a Plugin architectural pattern which allows us to train it on a custom dataset without having to alter the core network.  
 
 The required files to register our dataset as a plugin is contained in the folder `openpifpaf_openlane`. (IMPORTANT: Do not change the name of this folder as OpenPifPaf requires this naming convention to recognise the plugin.)
 
 ### 3. Download checkpoint (optional)
-The dataset that we are using is very big and will take days to train. We have provided a [checkpoint](https://drive.google.com/file/d/1IEKkXFKS5HWgyEEhrRoDiCdvLgZRtmV7/view?usp=sharing) that has already been trained on 30 epochs on 10% of the dataset. You may choose to train either from scratch (not recommended), or from one of the backbones provided by OpenPifPaf, or on top of our provided checkpoint. 
+The dataset that we are using is very big and will take days to train. We have provided a [checkpoint](https://drive.google.com/file/d/1IEKkXFKS5HWgyEEhrRoDiCdvLgZRtmV7/view?usp=sharing) that has already been trained on 30 epochs on 10% of the dataset, which already took about 5 days. You may choose to train either from scratch (not recommended), or from one of the backbones provided by OpenPifPaf, or on top of our provided checkpoint. 
 
 ## Dataset Description
 The dataset that we have chosen to work with is [OpenLane](https://github.com/OpenDriveLab/OpenLane). OpenLane is the largest scale real world 3D lane dataset. It owns 200K frames and over 880K carefully annotated lanes, where all lanes are annotated with both 2D and 3D information in every frame. For the purpose of this project, we will only be using the 2D lane annotations.
@@ -201,7 +201,7 @@ python3 -m openpifpaf.eval \
 Evaluation metrics like average precision (AP) are created with this tool.
 
 ## Experimental setup
-------------------
+
 To ensure that we get desirable results, we carried out a few rounds of trial and experimentation. Since there is no known example of OpenPifPaf being used on lanes, our strategy was to just try, observe the results and improve from there. 
 
 #### 1. Modelling the lanes as 24 keypoints
@@ -209,65 +209,82 @@ In the original annotations, the lanes are identified by a varying number of key
 
 To provide the network with a skeleton to work with, we simply plot out 24 keypoints and connected them to each other. The keypoints were obtained by uniformly downsampling from the original lane annotations.
 
-#### 2. Overfitting on a single image
-To verify that our method is working, we first performed overfitting on a single image for 1000 epochs. The loss decreased from 1.22539 to 0.19944, which is the same loss fundtion defined by [Kreiss et al.](https://arxiv.org/abs/2103.02440), consisting of confidence, localization and scale.  
+#### 2. Modelling just the start of the lane (1 keypoint)
+We realised that using our initial downsampling method, we are asking the model to detect **exactly 24** points on the lane mark, which is not fair for the model. This is because unlike human joint keypoints, which are learnable and localisable with visual cues, the model is unable to differentiate between different keypoints in the middle of the lane, and there is no way to tell it which point is better than the ones next to it. Hence, we decided to simplify the task by keeping only the closest keypoint, essentially asking the model to detect just the start of the lane. 
+Using this method, we observed that the results were more consistent. 
 
+#### 3. Modelling the start and end of the lane (2 keypoints)
+
+While we were able to yield consistent result using only one keypoint, this information is essentially not meaningful in the lane detection task, Therefore, we also implemented our plugin using only 2 keypoints with a new downsample strategy: keeping only the closest and the furthest lane points. Ideally, the model would learn to detect the start and end points of the lane and link them together. 
+
+This is certainly just a coarse straight-line estimation for the lane and it cannot model more complex lanes such as turns. However, it paves the way for the subsequent development of a more reasonable downsample strategy for middle points.
+
+
+If you are also interested in verifying our 2-kps model, you can simply first, delete the two files named `constants.py` and `openlane_kp.py`, and then, change the name of `constants_2kps.py` to `constants.py`, `openlane_kp_2kps.py` to `openlane_kp.py`. For trainer reading in annotations smoothly, you will need to redo the preprocess of data using `openlane_to_coco_2kp.py` as described in [Dataset Description](#dataset-description). This will extract only the start and end point coordinates annotation of every lane. Do not forget to specify the updated json file path in your trainning code.
+
+#### 4. Overfitting on a single image
+For all the above mentioned methods, to verify that our methods are working, before training on the big dataset formally, we first performed overfitting on a single image for 1000 epochs, with a learning rate of 0.001. 
+
+These are the results after overfitting on the 2-keypoints model.
 <p align="center" width="100%">
-    <img width="50%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/30951a79-7ba8-4a08-b1c1-e85d12051494">
+    <img width="50%" src="">
 </p>
 
-#### 3. Experiment with learning rates
+
+As observed, the model seems quite able to visually detect every lane. However, it seems to connect points from different lanes when there's visual occlusion from other vehicles. This is to be expected as 2 keypoints is simply too little information for the model to make accurate dedictions when there is loss of information.
 
 
-#### 4. Modelling just the start of the lane (1 keypoint)
-It didn't take us very long to realize it is not fair for lane keypoint detection using our downsample method. By this method, we are asking the model to detect exactly **these 24** points on the lane mark. 
-Human joint keypoints are learnable with all the visual cues, which is not the case for lane points. 
-
-#### 5. Modelling the start and end of the lane (2 keypoints)
-
-
-
-The metrics used for evaluation follows [COCO's](https://arxiv.org/abs/2103.02440) keypoint evaluation method. The object keypoint similarity [(OKS)](https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48) score is used to assign a bounding box 
-to each keypoint as a function of the person instance bounding box area. Similar to detection, the metric computes overlaps between ground truth and predicted bounding boxes to compute the standard detection metrics average precision (AP) and average recall (AR).
-
-
-Therefore, we also implemented our plugin using only 2 keypoints with a new downsample strategy: keeping only the closest and the furthest lane points. Ideally, the model would learn to detect the start and end points of the lane and link them together. 
-This is certainly just a coarse straight-line estimation for the lane and it cannot fit a turn well, however, it paves the way for the subsequent development of a more reasonable downsample strategy for middle points.
-  
-
-For this 2-keypoints model, we also conducted both overfitting experiments with a single image for 1000 epochs and also 5% of the original dataset for 80 epochs. 
+#### 5. Experiment with learning rates
+After several rounds of trials and error, we settled on a learning rate of 0.001. While we observed that the loss was decreasing steadily over time, we found that the rate of decrease was rather slow, which we deduced could be attributed to a low learning rate. However, when we increased the learning rate to 0.002, we experienced infinite loss. Hence, we decided to keep the learning rate at 0.001.
 
 ## Results
+The below images visualises the components of Composite Intensity Field (CIF) and Composite Association Field (CAF) for the closest keypoint and finally outputs the overall prediction. CIF characterises the intensity of predicted keypoints and CAF characterises the intensity of predicted association between keypoints. Together, these two components enable the model to identify and form connections between keypoints. For more information about CIF and CAF, you may refer to the [paper](https://arxiv.org/abs/2103.02440) written by the creators of OpenPifPaf. 
 
 *   **24 keypoints**
 
-
-
+[gif]
 
 *   **2 keypoints (closest and furthest)**
 #### Overfitting
-After training for 1000 epochs of single image, the prediction on the same image seems quite able to visually detect every lane. There're some mismatch though, it seems to connect points from different lanes when there's visual occlusion from other vehicles.
 
-Visualization of the components of CIF for the closest keypoint and CAF for the 2 keypoint association is shown below: 
+
+[gif]
+
 
 
 <p align="center" width="100%">
     <img width="100%" src="https://github.com/tlyi/CIVIL-459-Project/assets/69505852/ad078c0a-0710-4386-ba5f-481aee99cf3f">
 </p>
 
-#### 5% dataset run
-Predictions on validation images are shown below. Straight lanes are properly detected and curved lanes are simplified as expected.
+The below images show the comparison between predictions on validaton images using 24 keypoints (top) and 2 keypoints (bottom). These images were generated with the flag `--force-complete-pose` enabled as the models were unable to connect the keypoints well without it. While the outline of the lanes were modelled well, the model predicts it with very low confidence. We deduce that this could either be attributed to insufficient training epochs, or an inappropriately defined loss function (elaborated further [here](#2-redefine-evaluation-metrics)). 
 
+
+
+Using both methods, straight lanes are properly detected. However, as expected, curved lanes are simplified using just 2 keypoints, while with 24 keypoints, the curves are captured quite well. 
 
 
 ## Further Improvements
+#### 1. Redefine loss function
+
+The loss function is defined by [Kreiss et al.](https://arxiv.org/abs/2103.02440) and it consists of confidence, localization and scale. We observed that for the 24 keypoints model, the loss at the end of 30 epochs was still very high, at around 5000, and for the 2 keypoints, after 80 epochs, it was at ~75. Even though the loss was decreasing progressively with each epoch, it was still very high in the end. This could potentially be the reason why the model is unable to predict the lanes with high confidence. We suspect that the loss function may not be directly applicable on our task of lane detection. As [previously elaborated on](#2-modelling-just-the-start-of-the-lane-1-keypoint), it is unfair to expect the model to pinpoint keypoints on the lane the same way it detects distinct keypoints on human poses. More research could be donem focusing on published papers that deal with lane detection specifically, to come up with a more appropriate loss function.
+
+#### 2. Redefine evaluation metrics or improve downsampling strategy
+The metrics used for evaluation follows [COCO's](https://arxiv.org/abs/2103.02440) keypoint evaluation method. The object keypoint similarity [(OKS)](https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48) score is used to assign a bounding box to each keypoint as a function of the person instance bounding box area. The metric computes overlaps between ground truth and predicted bounding boxes for each keypoints to compute the standard detection metrics average precision (AP) and average recall (AR). As explored before, this is reasonable for human joints, but there is possibly no overlap at all between bounding boxes of 2 reasonable points near each other on the same lane. 
+
+We can either investigate the feasible scale and position of bounding box assigning for a lane keypoint to enlarge overlapping between 2 neighbor points on the lane, or implement starting point,distance rule, and ending point during keypoint downsampling for training to make the detection learnable.    
+
+#### 3. Extend to 3D space
+Since the COCO annotations were designed to work with 2D objects, we found it difficult to translate it to 3D space. Specifically, we were unsure how we could define a bounding box in 3D space. To overcome this, it is possible to instead write our own dataloader, or combine OpenPifPaf with state-of-the-art spatial transformation methods like (PersFormer)[https://arxiv.org/abs/2203.11089].
 
 ## Conclusion
+We have visually demonstrated the feasibility of extending the capabilities of OpenPifPaf to the task of lane detection.
+While there exists plenty of space for improvement, we are satisfied with the results we have achieved given the time and resource constraints, and believe that it still serves as a meaningful preliminary proof of concept for the task. 
 
-Short one
+Through working on this project, we were able to apply all our learnings from this course and see for ourselves the massive potential that deep learning has to offer in the field of autonomous vehicles. It has truly been a fruitful journey.
 
 ## References
 Kreiss, S., Bertoni, L., &amp; Alahi, A. (2022). OpenPifPaf: Composite fields for semantic keypoint detection and spatio-temporal association. IEEE Transactions on Intelligent Transportation Systems, 23(8), 13498–13511. https://doi.org/10.1109/tits.2021.3124981 
 
 Chen, L., Sima, C., Li, Y., Zheng, Z., Xu, J., Geng, X., Li, H., He, C., Shi, J., Qiao, Y., &amp; Yan, J. (2022). PERSFORMER: 3D lane detection via&nbsp;perspective transformer and&nbsp;the&nbsp;openlane benchmark. Lecture Notes in Computer Science, 550–567. https://doi.org/10.1007/978-3-031-19839-7_32 
+
 
