@@ -212,13 +212,14 @@ In the original annotations, the lanes are identified by a varying number of key
 To provide the network with a skeleton to work with, we simply plot out 24 keypoints and connected them to each other. The keypoints were obtained by uniformly downsampling from the original lane annotations.
 
 #### 2. Overfitting on a single image
-To verify that our method is working, we first performed overfitting on a single image for 1000 epochs. 
-[insert data]
+To verify that our method is working, we first performed overfitting on a single image for 1000 epochs. The loss decreased from 1.22539 to 0.19944, which is the same loss fundtion defined by [Kreiss et al.](https://arxiv.org/abs/2103.02440), consisting of confidence, localization and scale.  
 
 #### 3. Experiment with learning rates
 
 
 #### 4. Modelling just the start of the lane (1 keypoint)
+It didn't take us very long to realize it is not fair for lane keypoint detection using our downsample method. By this method, we are asking the model to detect exactly **these 24** points on the lane mark. 
+Human joint keypoints are learnable with all the visual cues, which is not the case for lane points. 
 
 #### 5. Modelling the start and end of the lane (2 keypoints)
 
@@ -227,8 +228,6 @@ To verify that our method is working, we first performed overfitting on a single
 The metrics used for evaluation follows [COCO's](https://arxiv.org/abs/2103.02440) keypoint evaluation method. The object keypoint similarity [(OKS)](https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48) score is used to assign a bounding box 
 to each keypoint as a function of the person instance bounding box area. Similar to detection, the metric computes overlaps between ground truth and predicted bounding boxes to compute the standard detection metrics average precision (AP) and average recall (AR).
 
-It didn't take us very long to realize it is not fair for lane keypoint detection using our downsample method. By this method, we are asking the model to detect exactly **these 24** points on the lane mark. 
-Human joint keypoints are learnable with all the visual cues, which is not the case for lane points. 
 
 Therefore, we also implemented our plugin using only 2 keypoints with a new downsample strategy: keeping only the closest and the furthest lane points. Ideally, the model would learn to detect the start and end points of the lane and link them together. 
 This is certainly just a coarse straight-line estimation for the lane and it cannot fit a turn well, however, it paves the way for the subsequent development of a more reasonable downsample strategy for middle points.
